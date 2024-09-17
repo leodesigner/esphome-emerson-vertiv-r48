@@ -49,9 +49,24 @@ void EmersonR48Component::setup() {
 }
 
 void EmersonR48Component::update() {
-  ESP_LOGD(TAG, "Sending read_all message");
-  std::vector<uint8_t> data = {0x00, 0xF0, 0x00, 0x80, 0x46, 0xA5, 0x34, 0x00};
-  this->canbus->send_data(CAN_ID_REQUEST, true, data);
+  static cnt = 0;
+  cnt++;
+
+  if (cnt == 1) {
+    ESP_LOGD(TAG, "Sending read_all message");
+    std::vector<uint8_t> data = {0x00, 0xF0, 0x00, 0x80, 0x46, 0xA5, 0x34, 0x00};
+    this->canbus->send_data(CAN_ID_REQUEST, true, data);
+  }
+
+  if (cnt == 2) {
+    ESP_LOGD(TAG, "Sending give 5 message");
+    std::vector<uint8_t> data = {0x20, 0xF0, 00, 0x80, 00, 00, 00, 00};;
+    this->canbus->send_data(CAN_ID_REQUEST, true, data);
+  }
+
+  if (cnt == 3) {
+    cnt = 0;
+  }
 
   // no new value for 5* intervall -> set sensors to NAN)
   if (millis() - lastUpdate_ > this->update_interval_ * 5) {
@@ -98,11 +113,23 @@ void EmersonR48Component::set_offline_values() {
   }
 }
 
+void print_data(const uint8_t* data, size_t length) {
+    // Create a buffer to hold the entire string
+    char buffer[3 * length + 1]; // Each byte requires 2 hex digits and a space, +1 for null terminator
+
+    // Format the data into the buffer
+    size_t pos = 0;
+    for (size_t i = 0; i < length; i++) {
+        pos += snprintf(buffer + pos, sizeof(buffer) - pos, "%02x ", data[i]);
+    }
+
+    // Log the entire line
+    ESP_LOGD(TAG, "received can_message.data: %s", buffer);
+}
+
 void EmersonR48Component::on_frame(uint32_t can_id, bool rtr, std::vector<uint8_t> &data) {
   // show data received
-  for (int i = 0; i < 8; i++) {
-    ESP_LOGD(TAG, "received can_message.data[%d]=%02x", i, data[i]);
-  }
+  print_data(data, 8);
 
   if (can_id == CAN_ID_DATA) {
     uint32_t value = (data[4] << 24) + (data[5] << 16) + (data[6] << 8) + data[7];
