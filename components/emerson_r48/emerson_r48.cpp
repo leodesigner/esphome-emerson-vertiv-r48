@@ -65,6 +65,13 @@ void EmersonR48Component::update() {
   }
 
   if (cnt == 3) {
+    ESP_LOGD(TAG, "Sending AC voltage");
+    std::vector<uint8_t> data = {0x01, 0xF0, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
+    this->canbus->send_data(CAN_ID_REQUEST, true, data);
+  }
+
+  if (cnt == 4) {
+    ESP_LOGD(TAG, "----------------");
     cnt = 0;
   }
 
