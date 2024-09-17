@@ -113,23 +113,20 @@ void EmersonR48Component::set_offline_values() {
   }
 }
 
-void print_data(const uint8_t* data, size_t length) {
-    // Create a buffer to hold the entire string
-    char buffer[3 * length + 1]; // Each byte requires 2 hex digits and a space, +1 for null terminator
-
-    // Format the data into the buffer
-    size_t pos = 0;
-    for (size_t i = 0; i < length; i++) {
-        pos += snprintf(buffer + pos, sizeof(buffer) - pos, "%02x ", data[i]);
-    }
-
-    // Log the entire line
-    ESP_LOGD(TAG, "received can_message.data: %s", buffer);
-}
-
 void EmersonR48Component::on_frame(uint32_t can_id, bool rtr, std::vector<uint8_t> &data) {
-  // show data received
-  print_data(&data, 8);
+  // Create a buffer to hold the formatted string
+  // Each byte is represented by two hex digits and a space, +1 for null terminator
+  size_t length = data.size();
+  char buffer[3 * length + 1];
+
+  // Format the data into the buffer
+  size_t pos = 0;
+  for (size_t i = 0; i < length; ++i) {
+      pos += snprintf(buffer + pos, sizeof(buffer) - pos, "%02x ", data[i]);
+  }
+
+  // Log the entire line
+  ESP_LOGD(TAG, "received can_message.data: %s", buffer);
 
   if (can_id == CAN_ID_DATA) {
     uint32_t value = (data[4] << 24) + (data[5] << 16) + (data[6] << 8) + data[7];
