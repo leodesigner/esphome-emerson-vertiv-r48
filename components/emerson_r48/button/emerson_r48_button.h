@@ -4,7 +4,7 @@
 #include "esphome/components/button/button.h"
 
 namespace esphome {
-namespace huawei_r4850 {
+namespace emerson_r48 {
 
 class EmersonR48Button : public button::Button, public Component {
  public:
