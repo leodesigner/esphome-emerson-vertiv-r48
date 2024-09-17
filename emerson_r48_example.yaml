@@ -1,0 +1,116 @@
+esphome:
+  name: emerson_r48
+  friendly_name: Emerson Vertiv R48
+
+external_components:
+  - source: github://leodesigner/esphome-emerson-vertiv-r48
+    refresh: 0s
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+  level: DEBUG
+  logs:
+    canbus: INFO
+
+# Enable Home Assistant API
+api:
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esphome-Emerson"
+    password: "qwertyzxc"
+
+ota:
+  password: !secret ota_password
+
+web_server:
+
+mqtt:
+  broker: !secret mqtt_host
+  #username: !secret mqtt_username
+  #password: !secret mqtt_password
+  id: mqtt_client
+  topic_prefix: eh/emerson
+
+
+spi:
+  id: McpSpi
+  clk_pin: GPIO14
+  mosi_pin: GPIO13
+  miso_pin: GPIO12
+
+canbus:
+  - platform: mcp2515
+    id: can
+    spi_id: McpSpi
+    use_extended_id: true
+    cs_pin: GPIO15
+    can_id: 0x0607FF83
+    bit_rate: 125kbps
+    mode: NORMAL
+    on_frame:
+    - can_id: 0x0707F803
+      #can_id_mask: 0b00000000000000000000000000000
+      use_extended_id: true
+      then:
+      - lambda: |-
+          std::string b(x.begin(), x.end());
+          ESP_LOGD(">>> canbus:", "%s", &b[0] );
+    - can_id: 0x060F8007
+      #can_id_mask: 0b00000000000000000000000000000
+      use_extended_id: true
+      then:
+      - lambda: |-
+          std::string b(x.begin(), x.end());
+          ESP_LOGD(">>> canbus:", "%s", &b[0] );
+
+
+
+emerson_r48:
+  canbus_id: can
+  update_interval: 5s
+
+sensor:
+  - platform: emerson_r48
+    output_voltage:
+      name: Output voltage
+    output_current:
+      name: Output current
+#    output_power:
+#      name: Output power
+#    input_voltage:
+#      name: Input voltage
+#    input_current:
+#      name: Input current
+#    input_power:
+#      name: Input power
+#    input_frequency:
+#      name: Input frequency
+#    efficiency:
+#      name: Efficiency
+#    input_temp:
+#      name: Input temperature
+#    output_temp:
+#      name: Output temperature
+    
+
+number:
+  - platform: emerson_r48
+    output_voltage:
+      name: Set output voltage
+    max_output_current:
+      name: Max output current
+
+button:
+  - platform: emerson_r48
+    set_offline_values:
+      name: Set offline values
+      
