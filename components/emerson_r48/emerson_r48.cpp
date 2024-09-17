@@ -129,7 +129,7 @@ void print_data(const uint8_t* data, size_t length) {
 
 void EmersonR48Component::on_frame(uint32_t can_id, bool rtr, std::vector<uint8_t> &data) {
   // show data received
-  print_data(data, 8);
+  print_data(&data, 8);
 
   if (can_id == CAN_ID_DATA) {
     uint32_t value = (data[4] << 24) + (data[5] << 16) + (data[6] << 8) + data[7];
