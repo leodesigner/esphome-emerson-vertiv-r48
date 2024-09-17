@@ -49,7 +49,7 @@ void EmersonR48Component::setup() {
 }
 
 void EmersonR48Component::update() {
-  static unit8_t cnt = 0;
+  static uint8_t cnt = 0;
   cnt++;
 
   if (cnt == 1) {
