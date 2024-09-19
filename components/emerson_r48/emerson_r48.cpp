@@ -81,7 +81,7 @@ void EmersonR48Component::update() {
     this->canbus->send_data(CAN_ID_REQUEST, true, data);
   }
 
-  if (cnt == 5) { cnt = 1; }
+  if (cnt == 5) { cnt = 0; }
 
 
   // no new value for 5* intervall -> set sensors to NAN)
