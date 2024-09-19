@@ -85,7 +85,7 @@ void EmersonR48Component::update() {
 
 
   // no new value for 5* intervall -> set sensors to NAN)
-  if (millis() - lastUpdate_ > this->update_interval_ * 5) {
+  if (millis() - lastUpdate_ > this->update_interval_ * 10) {
     this->publish_sensor_state_(this->input_power_sensor_, NAN);
     this->publish_sensor_state_(this->input_voltage_sensor_, NAN);
     this->publish_sensor_state_(this->input_current_sensor_, NAN);
@@ -147,36 +147,40 @@ void EmersonR48Component::on_frame(uint32_t can_id, bool rtr, std::vector<uint8_
   if (can_id == CAN_ID_DATA) {
     uint32_t value = (data[4] << 24) + (data[5] << 16) + (data[6] << 8) + data[7];
     float conv_value = 0;
+    memcpy(&conv_value, &value, sizeof(conv_value));
     switch (data[3]) {
       case EMR48_DATA_OUTPUT_V:
-        conv_value = value / 1.0;
+        //conv_value = value / 1.0;
         this->publish_sensor_state_(this->output_voltage_sensor_, conv_value);
         ESP_LOGV(TAG, "Output voltage: %f", conv_value);
         break;
 
       case EMR48_DATA_OUTPUT_A:
-        conv_value = value / 1.0;
+        //conv_value = value / 1.0;
         this->publish_sensor_state_(this->output_current_sensor_, conv_value);
         ESP_LOGV(TAG, "Output current: %f", conv_value);
         break;
 
       case EMR48_DATA_OUTPUT_AL:
-        conv_value = value / 1.0;
+        //conv_value = value / 1.0;
         this->publish_number_state_(this->max_output_current_number_, conv_value);
         ESP_LOGV(TAG, "Output current limit: %f", conv_value);
         break;
 
       case EMR48_DATA_OUTPUT_T:
-        conv_value = value / 1.0;
+        //conv_value = value / 1.0;
         this->publish_sensor_state_(this->output_temp_sensor_, conv_value);
         ESP_LOGV(TAG, "Temperature: %f", conv_value);
         break;
 
       case EMR48_DATA_OUTPUT_IV:
-        conv_value = value / 1.0;
+        //conv_value = value / 1.0;
         this->publish_sensor_state_(this->input_voltage_sensor_, conv_value);
         ESP_LOGV(TAG, "Input voltage: %f", conv_value);
+
+        this->lastUpdate_ = millis();
         break;
+
 
       case R48xx_DATA_INPUT_FREQ:
         conv_value = value / 1024.0;
