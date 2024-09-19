@@ -14,8 +14,11 @@ static const uint32_t CAN_ID_REQUEST = 0x06000783;
 static const uint32_t CAN_ID_DATA = 0x0707F803;
 static const uint32_t CAN_ID_SET = 0x0607FF83;
 
-static const uint8_t EMR48_DATA_OUTPUT_V_A = 0x11;
-static const uint8_t EMR48_DATA_OUTPUT_DATA = 0x41;
+static const uint8_t EMR48_DATA_OUTPUT_V = 0x01;
+static const uint8_t EMR48_DATA_OUTPUT_A = 0x02;
+static const uint8_t EMR48_DATA_OUTPUT_AL = 0x03;
+static const uint8_t EMR48_DATA_OUTPUT_T = 0x04;
+static const uint8_t EMR48_DATA_OUTPUT_IV = 0x05;
 
 static const uint8_t R48xx_DATA_INPUT_POWER = 0x70;
 static const uint8_t R48xx_DATA_INPUT_FREQ = 0x71;
@@ -49,31 +52,37 @@ void EmersonR48Component::setup() {
 }
 
 void EmersonR48Component::update() {
-  static uint8_t cnt = 0;
+  static uint8_t rv = 0;
   cnt++;
 
   if (cnt == 1) {
-    ESP_LOGD(TAG, "Sending read_all message");
-    std::vector<uint8_t> data = {0x00, 0xF0, 0x00, 0x80, 0x46, 0xA5, 0x34, 0x00};
+    ESP_LOGD(TAG, "Requesting output voltage message");
+    std::vector<uint8_t> data = {0x01, 0xF0, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00};
     this->canbus->send_data(CAN_ID_REQUEST, true, data);
   }
-
   if (cnt == 2) {
-    ESP_LOGD(TAG, "Sending give 5 message");
-    std::vector<uint8_t> data = {0x20, 0xF0, 00, 0x80, 00, 00, 00, 00};;
+    ESP_LOGD(TAG, "Requesting output current message");
+    std::vector<uint8_t> data = {0x01, 0xF0, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00};
     this->canbus->send_data(CAN_ID_REQUEST, true, data);
   }
-
   if (cnt == 3) {
-    ESP_LOGD(TAG, "Sending AC voltage");
+    ESP_LOGD(TAG, "Requesting output current limit message");
+    std::vector<uint8_t> data = {0x01, 0xF0, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00};
+    this->canbus->send_data(CAN_ID_REQUEST, true, data);
+  }
+  if (cnt == 4) {
+    ESP_LOGD(TAG, "Requesting temperature (C) message");
+    std::vector<uint8_t> data = {0x01, 0xF0, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00};
+    this->canbus->send_data(CAN_ID_REQUEST, true, data);
+  }
+  if (cnt == 3) {
+    ESP_LOGD(TAG, "Requesting supply voltage message");
     std::vector<uint8_t> data = {0x01, 0xF0, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
     this->canbus->send_data(CAN_ID_REQUEST, true, data);
   }
 
-  if (cnt == 4) {
-    ESP_LOGD(TAG, "----------------");
-    cnt = 0;
-  }
+  if (cnt == 5) { cnt = 1; }
+
 
   // no new value for 5* intervall -> set sensors to NAN)
   if (millis() - lastUpdate_ > this->update_interval_ * 5) {
@@ -138,11 +147,35 @@ void EmersonR48Component::on_frame(uint32_t can_id, bool rtr, std::vector<uint8_
   if (can_id == CAN_ID_DATA) {
     uint32_t value = (data[4] << 24) + (data[5] << 16) + (data[6] << 8) + data[7];
     float conv_value = 0;
-    switch (data[1]) {
-      case EMR48_DATA_OUTPUT_V_A:
-        conv_value = value / 1024.0;
-        this->publish_sensor_state_(this->input_power_sensor_, conv_value);
-        ESP_LOGV(TAG, "Input power: %f", conv_value);
+    switch (data[3]) {
+      case EMR48_DATA_OUTPUT_V:
+        conv_value = value / 1.0;
+        this->publish_sensor_state_(this->output_voltage_sensor_, conv_value);
+        ESP_LOGV(TAG, "Output voltage: %f", conv_value);
+        break;
+
+      case EMR48_DATA_OUTPUT_A:
+        conv_value = value / 1.0;
+        this->publish_sensor_state_(this->output_current_sensor_, conv_value);
+        ESP_LOGV(TAG, "Output current: %f", conv_value);
+        break;
+
+      case EMR48_DATA_OUTPUT_AL:
+        conv_value = value / 1.0;
+        this->publish_number_state_(this->max_output_current_number_, conv_value);
+        ESP_LOGV(TAG, "Output current limit: %f", conv_value);
+        break;
+
+      case EMR48_DATA_OUTPUT_T:
+        conv_value = value / 1.0;
+        this->publish_sensor_state_(this->output_temp_sensor_, conv_value);
+        ESP_LOGV(TAG, "Temperature: %f", conv_value);
+        break;
+
+      case EMR48_DATA_OUTPUT_IV:
+        conv_value = value / 1.0;
+        this->publish_sensor_state_(this->input_voltage_sensor_, conv_value);
+        ESP_LOGV(TAG, "Input voltage: %f", conv_value);
         break;
 
       case R48xx_DATA_INPUT_FREQ:
