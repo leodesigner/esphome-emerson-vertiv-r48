@@ -75,7 +75,7 @@ void EmersonR48Component::update() {
     std::vector<uint8_t> data = {0x01, 0xF0, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00};
     this->canbus->send_data(CAN_ID_REQUEST, true, data);
   }
-  if (cnt == 3) {
+  if (cnt == 5) {
     ESP_LOGD(TAG, "Requesting supply voltage message");
     std::vector<uint8_t> data = {0x01, 0xF0, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00};
     this->canbus->send_data(CAN_ID_REQUEST, true, data);
