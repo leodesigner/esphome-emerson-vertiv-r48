@@ -11,7 +11,7 @@ namespace emerson_r48 {
 static const char *const TAG = "emerson_r48";
 
 static const uint32_t CAN_ID_REQUEST = 0x06000783;
-static const uint32_t CAN_ID_DATA = 0x0707F803;
+static const uint32_t CAN_ID_DATA = 0x60f8003; // 0x0707F803;
 static const uint32_t CAN_ID_SET = 0x0607FF83;
 
 static const uint8_t EMR48_DATA_OUTPUT_V = 0x01;
