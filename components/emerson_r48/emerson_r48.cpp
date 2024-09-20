@@ -184,7 +184,7 @@ void EmersonR48Component::set_max_output_current(float value, bool offline) {
         
         this->canbus->send_data(CAN_ID_SET, true, data);
     } else {
-        ESP_LOGD("Current should be between 10 and 121\n");
+        ESP_LOGD(TAG, "Current should be between 10 and 121\n");
     }
 }
 
