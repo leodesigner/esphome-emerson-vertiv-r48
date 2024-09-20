@@ -10,15 +10,15 @@ namespace emerson_r48 {
 
 static const char *const TAG = "emerson_r48";
 
-static const EMR48_OUTPUT_VOLTAGE_MIN = 41.0;
-static const EMR48_OUTPUT_VOLTAGE_MAX = 58.5;
+static const float EMR48_OUTPUT_VOLTAGE_MIN = 41.0;
+static const float EMR48_OUTPUT_VOLTAGE_MAX = 58.5;
 
-static const EMR48_OUTPUT_CURRENT_RATED_VALUE = 62.5;
-static const EMR48_OUTPUT_CURRENT_RATED_PERCENTAGE_MIN = 10;
-static const EMR48_OUTPUT_CURRENT_RATED_PERCENTAGE_MAX = 121;
-static const EMR48_OUTPUT_CURRENT_RATED_PERCENTAGE = 121;
-static const EMR48_OUTPUT_CURRENT_MIN = 5.5; // 10%, rounded up to nearest 0.5A
-static const EMR48_OUTPUT_CURRENT_MAX = EMR48_OUTPUT_CURRENT_RATED_VALUE;
+static const float EMR48_OUTPUT_CURRENT_RATED_VALUE = 62.5;
+static const float EMR48_OUTPUT_CURRENT_RATED_PERCENTAGE_MIN = 10;
+static const float EMR48_OUTPUT_CURRENT_RATED_PERCENTAGE_MAX = 121;
+static const float EMR48_OUTPUT_CURRENT_RATED_PERCENTAGE = 121;
+static const float EMR48_OUTPUT_CURRENT_MIN = 5.5; // 10%, rounded up to nearest 0.5A
+static const float EMR48_OUTPUT_CURRENT_MAX = EMR48_OUTPUT_CURRENT_RATED_VALUE;
 
 static const uint32_t CAN_ID_REQUEST = 0x06000783;
 static const uint32_t CAN_ID_DATA = 0x60f8003; // 0x0707F803;
@@ -188,6 +188,7 @@ void EmersonR48Component::set_max_output_current(float value, bool offline) {
     }
 }
 
+/*
 void EmersonR48Component::set_max_output_current2(float value, bool offline) {
   uint8_t functionCode = 0x3;
   if (offline)
@@ -197,6 +198,7 @@ void EmersonR48Component::set_max_output_current2(float value, bool offline) {
       0x1, functionCode, 0x0, 0x0, (uint8_t) (raw >> 24), (uint8_t) (raw >> 16), (uint8_t) (raw >> 8), (uint8_t) raw};
   //this->canbus->send_data(CAN_ID_SET, true, data);
 }
+*/
 
 //# AC input current limit (called Diesel power limit): gives the possibility to reduce the overall power of the rectifier
 //def limit_input(channel, current):
@@ -219,10 +221,10 @@ void sendControl(){
    //control bits...
    uint8_t msg[8] = {0, 0xF0, 0, 0x80, 0, 0, 0, 0};
    msg[2] = dcOff << 7 | fanFull << 4 | flashLed <<3 | acOff << 2 | 1;
-   txId = 0x06080783; // CAN_ID_SET_CTL
-   sendcommand(txId, msg);
+   //txId = 0x06080783; // CAN_ID_SET_CTL
+   //sendcommand(txId, msg);
 
-   looptime = millis();
+   //looptime = millis();
 }
 
 
