@@ -180,7 +180,7 @@ void EmersonR48Component::set_max_output_current(float value, bool offline) {
         float_to_bytearray(limit, byte_array);
         
         uint8_t p = offline ? 0x19 : 0x22;
-        uint8_t data[7] = {0x03, 0xF0, 0x00, p, byte_array[0], byte_array[1], byte_array[2], byte_array[3]};
+        std::vector<uint8_t> data = { 0x03, 0xF0, 0x00, p, byte_array[0], byte_array[1], byte_array[2], byte_array[3] };
         
         this->canbus->send_data(CAN_ID_SET, true, data);
     } else {
