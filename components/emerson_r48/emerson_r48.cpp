@@ -184,7 +184,7 @@ void EmersonR48Component::set_max_output_current(float value, bool offline) {
         
         this->canbus->send_data(CAN_ID_SET, true, data);
     } else {
-        ESP_LOGD("Current should be between %d%% and %d%%\n", EMR48_OUTPUT_CURRENT_RATED_PERCENTAGE_MIN, EMR48_OUTPUT_CURRENT_RATED_PERCENTAGE_MAX);
+        ESP_LOGD("Current should be between %f%% and %f%%\n", EMR48_OUTPUT_CURRENT_RATED_PERCENTAGE_MIN, EMR48_OUTPUT_CURRENT_RATED_PERCENTAGE_MAX);
     }
 }
 
