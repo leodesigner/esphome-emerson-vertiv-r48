@@ -137,6 +137,19 @@ void EmersonR48Component::set_output_voltage(float value, bool offline) {
     std::vector<uint8_t> data = {
         0x03, 0xF0, 0x0, p, (uint8_t) (raw >> 24), (uint8_t) (raw >> 16), (uint8_t) (raw >> 8), (uint8_t) raw};
     this->canbus->send_data(CAN_ID_SET, true, data);
+
+    size_t length = data.size();
+    char buffer[3 * length + 1];
+
+    // Format the data into the buffer
+    size_t pos = 0;
+    for (size_t i = 0; i < length; ++i) {
+        pos += snprintf(buffer + pos, sizeof(buffer) - pos, "%02x ", data[i]);
+    }
+
+    // Log the entire line
+    ESP_LOGD(TAG, "sent can_message.data: %s", buffer);
+
   } else {
     ESP_LOGD(TAG, "set output voltage is out of range: %f", value);
   }
@@ -183,6 +196,19 @@ void EmersonR48Component::set_max_output_current(float value, bool offline) {
         std::vector<uint8_t> data = { 0x03, 0xF0, 0x00, p, byte_array[0], byte_array[1], byte_array[2], byte_array[3] };
         
         this->canbus->send_data(CAN_ID_SET, true, data);
+
+        size_t length = data.size();
+        char buffer[3 * length + 1];
+
+        // Format the data into the buffer
+        size_t pos = 0;
+        for (size_t i = 0; i < length; ++i) {
+            pos += snprintf(buffer + pos, sizeof(buffer) - pos, "%02x ", data[i]);
+        }
+
+        // Log the entire line
+        ESP_LOGD(TAG, "sent can_message.data: %s", buffer);
+
     } else {
         ESP_LOGD(TAG, "Current should be between 10 and 121\n");
     }
