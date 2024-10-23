@@ -2,6 +2,6 @@
 # example configuration:
 
 switch:
-  - platform: empty_switch
-    name: Empty switch
+  - platform: emerson_switch
+    name: Emerson switch
 ```

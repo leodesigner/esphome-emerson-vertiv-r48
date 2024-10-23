@@ -21,6 +21,7 @@ CONFIG_SCHEMA = cv.All(
                     cv.Optional(
                         CONF_ENTITY_CATEGORY, default=ENTITY_CATEGORY_CONFIG
                     ): cv.entity_category,
+                    cv.Required('name'): cv.string_strict
                 }
             ),
         }

@@ -17,6 +17,7 @@ class EmersonR48Component : public PollingComponent {
 
   void set_output_voltage(float value, bool offline = false);
   void set_max_output_current(float value, bool offline = false);
+  void set_max_input_current(float value);
   void set_offline_values();
 
   void set_input_voltage_sensor(sensor::Sensor *input_voltage_sensor) { input_voltage_sensor_ = input_voltage_sensor; }
@@ -33,9 +34,10 @@ class EmersonR48Component : public PollingComponent {
   void set_output_current_sensor(sensor::Sensor *output_current_sensor) {
     output_current_sensor_ = output_current_sensor;
   }
-  // void set_max_output_current_sensor(sensor::Sensor *max_output_current_sensor) {
-  //   max_output_current_sensor_ = max_output_current_sensor;
-  // }
+  void set_max_output_current_sensor(sensor::Sensor *max_output_current_sensor) {
+     max_output_current_sensor_ = max_output_current_sensor;
+  }
+
   void set_output_power_sensor(sensor::Sensor *output_power_sensor) { output_power_sensor_ = output_power_sensor; }
   void set_output_temp_sensor(sensor::Sensor *output_temp_sensor) { output_temp_sensor_ = output_temp_sensor; }
 
@@ -45,6 +47,22 @@ class EmersonR48Component : public PollingComponent {
   void set_max_output_current_number(number::Number *max_output_current_number) {
     max_output_current_number_ = max_output_current_number;
   }
+  void set_max_input_current_number(number::Number *max_input_current_number) {
+    max_input_current_number_ = max_input_current_number;
+  }
+
+  void set_control(uint8_t msgv);
+
+  void sendSync();
+  void sendSync2();
+  void gimme5();
+
+  uint32_t lastCtlSent_;
+
+  boolean dcOff_ = 0;
+  boolean fanFull_ = 0;
+  boolean flashLed_ = 0;
+  boolean acOff_ = 0;
 
  protected:
   canbus::Canbus *canbus;
@@ -58,12 +76,13 @@ class EmersonR48Component : public PollingComponent {
   sensor::Sensor *efficiency_sensor_{nullptr};
   sensor::Sensor *output_voltage_sensor_{nullptr};
   sensor::Sensor *output_current_sensor_{nullptr};
-  // sensor::Sensor *max_output_current_sensor_{nullptr};
+  sensor::Sensor *max_output_current_sensor_{nullptr};
   sensor::Sensor *output_power_sensor_{nullptr};
   sensor::Sensor *output_temp_sensor_{nullptr};
 
   number::Number *output_voltage_number_{nullptr};
   number::Number *max_output_current_number_{nullptr};
+  number::Number *max_input_current_number_{nullptr};
 
   void on_frame(uint32_t can_id, bool rtr, std::vector<uint8_t> &data);
 

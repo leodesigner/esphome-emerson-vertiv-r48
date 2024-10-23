@@ -1,22 +1,22 @@
 esphome:
-  name: emerson_r48
-  friendly_name: Emerson Vertiv R48
+  name: "esphome-emerson"
+  friendly_name: Emerson_Vertiv_R48
 
 external_components:
   - source: github://leodesigner/esphome-emerson-vertiv-r48
-    refresh: 0s
+#    refresh: 0s
 
 esp8266:
   board: esp01_1m
 
 # Enable logging
 logger:
-  level: DEBUG
-  logs:
-    canbus: INFO
+#  level: DEBUG
+#  logs:
+#    canbus: INFO
 
 # Enable Home Assistant API
-api:
+#api:
 
 
 wifi:
@@ -31,7 +31,8 @@ wifi:
 ota:
   password: !secret ota_password
 
-web_server:
+#web_server:
+captive_portal:
 
 mqtt:
   broker: !secret mqtt_host
@@ -56,27 +57,12 @@ canbus:
     can_id: 0x0607FF83
     bit_rate: 125kbps
     mode: NORMAL
-    on_frame:
-    - can_id: 0x0707F803
-      #can_id_mask: 0b00000000000000000000000000000
-      use_extended_id: true
-      then:
-      - lambda: |-
-          std::string b(x.begin(), x.end());
-          ESP_LOGD(">>> canbus:", "%s", &b[0] );
-    - can_id: 0x060F8007
-      #can_id_mask: 0b00000000000000000000000000000
-      use_extended_id: true
-      then:
-      - lambda: |-
-          std::string b(x.begin(), x.end());
-          ESP_LOGD(">>> canbus:", "%s", &b[0] );
-
+    data_rate: 10Mhz
 
 
 emerson_r48:
   canbus_id: can
-  update_interval: 5s
+  update_interval: 1s
 
 sensor:
   - platform: emerson_r48
@@ -84,23 +70,13 @@ sensor:
       name: Output voltage
     output_current:
       name: Output current
-#    output_power:
-#      name: Output power
-#    input_voltage:
-#      name: Input voltage
-#    input_current:
-#      name: Input current
-#    input_power:
-#      name: Input power
-#    input_frequency:
-#      name: Input frequency
-#    efficiency:
-#      name: Efficiency
-#    input_temp:
-#      name: Input temperature
-#    output_temp:
-#      name: Output temperature
-    
+    output_temp:
+      name: Temperature
+    input_voltage:
+      name: AC Voltage
+    max_output_current:
+      name: DC max current
+
 
 number:
   - platform: emerson_r48
@@ -108,9 +84,25 @@ number:
       name: Set output voltage
     max_output_current:
       name: Max output current
+    max_input_current:
+      name: Max input current
 
 button:
   - platform: emerson_r48
     set_offline_values:
       name: Set offline values
+  - platform: restart
+    name: "Restart ESP"
+
+switch:
+  - platform: emerson_r48
+    ac_sw:
+      name: "AC switch Turn OFF"
+    dc_sw:
+      name: "DC switch Turn OFF"
+    fan_sw:
+      name: "FAN switch MAX"
+    led_sw:
+      name: "LED switch"
+
       
