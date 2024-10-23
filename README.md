@@ -7,5 +7,7 @@ A used R48-3000e3 (3kW) with adapter interface can be found on Aliexpress for un
 References:
 
 Huge thanks to:
+
 https://github.com/PurpleAlien/R48_Rectifier
+
 https://github.com/mb-software/esphome-huawei-r4850
