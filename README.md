@@ -3,9 +3,6 @@ Esphome custom component to control Emerson / Vertiv R48 rectifier (PSU)
 
 A used R48-3000e3 (3kW) with adapter interface can be found on Aliexpress for under $100 shipping included: https://a.aliexpress.com/_mP5xhSM
 
-Changes:
-Updated .yaml to integrate with HA api and reduce CAN traffic
-Udpated __init__.py files ready for ESPHome Builder 2025.11
 
 References:
 
