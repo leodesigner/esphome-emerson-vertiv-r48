@@ -8,7 +8,7 @@ esp32:
     type: esp-idf
 
 external_components:
-  - source: github://Kylevdm/esphome-emerson-vertiv-r48
+  - source: github://leodesigner/esphome-emerson-vertiv-r48
     refresh: 0s
 
 logger:
