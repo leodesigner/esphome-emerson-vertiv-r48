@@ -16,7 +16,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(EmersonR48Component),
         cv.Required(CONF_CANBUS_ID): cv.use_id(CanbusComponent),
     }
-).extend(cv.polling_component_schema("5s"))
+).extend(cv.polling_component_schema("1s"))
 
 
 async def to_code(config):

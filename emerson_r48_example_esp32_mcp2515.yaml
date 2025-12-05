@@ -1,0 +1,102 @@
+esphome:
+  name: "esphome-emerson"
+  friendly_name: Emerson_Vertiv_R48
+
+external_components:
+  - source: github://leodesigner/esphome-emerson-vertiv-r48
+    refresh: 0s
+
+esp32: 
+  board: nodemcu-32s
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Esphome-Emerson"
+    password: "qwertyzxc"
+
+ota:
+ - platform: esphome
+   password: "ota_password"
+
+captive_portal:
+
+#mqtt:
+  #broker: !secret mqtt_host
+  #username: !secret mqtt_v2l
+  #password: !secret mqtt_pass_v2l
+  #client_id: emerson_r48_3000e3_v2l
+  #id: mqtt_client
+  #topic_prefix: eh/emerson
+
+spi:
+  - id: McpSpi
+    clk_pin: GPIO18
+    mosi_pin: GPIO23
+    miso_pin: GPIO19
+
+canbus:
+  - platform: mcp2515
+    id: can
+    spi_id: McpSpi
+    use_extended_id: true
+    cs_pin: GPIO5
+    can_id: 0x0607FF83
+    bit_rate: 125kbps
+    mode: NORMAL
+
+emerson_r48:
+  canbus_id: can
+  update_interval: 1s
+
+sensor:
+  - platform: emerson_r48
+    output_voltage:
+      name: "Output voltage"
+    output_current:
+      name: "Output current"
+    output_temp:
+      name: "Temperature"
+    input_voltage:
+      name: "AC Voltage"
+    max_output_current:
+      name: "DC Max Current"
+      unit_of_measurement: "%"
+      icon: "mdi:percent"
+
+
+number:
+  - platform: emerson_r48
+    output_voltage:
+      name: "Set output voltage"
+    max_output_current:
+      name: "Set Max Current"
+      unit_of_measurement: "%"
+      icon: "mdi:percent"
+    max_input_current:
+      name: "Max input current"
+
+button:
+  - platform: emerson_r48
+    set_offline_values:
+      name: Set offline values
+  - platform: restart
+    name: "Restart ESP"
+
+switch:
+  - platform: emerson_r48
+    ac_sw:
+      name: "AC switch Turn OFF"
+    dc_sw:
+      name: "DC switch Turn OFF"
+    fan_sw:
+      name: "FAN switch MAX"
+    led_sw:
+      name: "LED switch"
